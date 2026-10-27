@@ -2457,3 +2457,293 @@
   .loading-dots i,
   .loading-block { animation: none; }
 }
+
+/* Translucent surfaces and clearer focus states across the app. */
+body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse at 8% 0%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 34rem),
+    radial-gradient(ellipse at 95% 22%, color-mix(in oklab, #62c6db 8%, transparent), transparent 32rem);
+}
+
+.dark body {
+  background-image:
+    radial-gradient(ellipse at 8% 0%, color-mix(in oklab, var(--primary) 15%, transparent), transparent 34rem),
+    radial-gradient(ellipse at 95% 22%, color-mix(in oklab, #287d9b 13%, transparent), transparent 32rem);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--primary) 58%, transparent);
+  outline-offset: 3px;
+}
+
+.site-header,
+.dashboard-header,
+.assistant-header {
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  width: min(100% - 64px, 1280px);
+  background: color-mix(in oklab, var(--background) 78%, transparent);
+}
+
+.dashboard-header,
+.assistant-header {
+  background: color-mix(in oklab, var(--card) 78%, transparent);
+}
+
+.assistant-sidebar {
+  background: color-mix(in oklab, var(--card) 76%, transparent);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+.app-page,
+.dashboard-page,
+.assistant-page {
+  background: transparent;
+}
+
+.auth-card,
+.event-card,
+.feature-card,
+.event-list-card,
+.event-form,
+.event-overview-main,
+.event-overview-aside,
+.event-module-placeholder,
+.dashboard-empty,
+.event-list-empty,
+.assistant-plan,
+.assistant-message,
+.assistant-composer,
+.planning-module,
+.planning-create-form,
+.planning-item,
+.venue-admin-panel,
+.venue-admin-form,
+.venue-card,
+.venue-room-list > li,
+.venue-booking-item,
+.document-workspace,
+.document-list-panel,
+.team-member-card,
+.idea-card,
+.notification-card,
+.loading-event-card,
+.loading-form-card,
+.loading-chat-card,
+.loading-auth-card {
+  border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
+  background: color-mix(in oklab, var(--card) 76%, transparent);
+  box-shadow:
+    0 18px 48px color-mix(in oklab, var(--foreground) 7%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+.dark .auth-card,
+.dark .event-card,
+.dark .feature-card,
+.dark .event-list-card,
+.dark .event-form,
+.dark .event-overview-main,
+.dark .event-overview-aside,
+.dark .event-module-placeholder,
+.dark .dashboard-empty,
+.dark .event-list-empty,
+.dark .assistant-plan,
+.dark .assistant-message,
+.dark .assistant-composer,
+.dark .planning-module,
+.dark .planning-create-form,
+.dark .planning-item,
+.dark .venue-admin-panel,
+.dark .venue-admin-form,
+.dark .venue-card,
+.dark .venue-room-list > li,
+.dark .venue-booking-item,
+.dark .document-workspace,
+.dark .document-list-panel,
+.dark .team-member-card,
+.dark .idea-card,
+.dark .notification-card,
+.dark .loading-event-card,
+.dark .loading-form-card,
+.dark .loading-chat-card,
+.dark .loading-auth-card {
+  background: color-mix(in oklab, var(--card) 78%, transparent);
+  box-shadow:
+    0 18px 48px color-mix(in oklab, black 18%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 10%, transparent);
+}
+
+.event-card {
+  transform: none;
+}
+
+.visual-glow {
+  width: min(370px, calc(100vw - 40px));
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.event-list-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 22px 52px color-mix(in oklab, var(--primary) 13%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 72%, transparent);
+}
+
+.button,
+.assistant-sidebar-link,
+.assistant-prompts button,
+.theme-control,
+.dashboard-signout,
+.form-field input,
+.form-field select,
+.form-field textarea {
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #59b5ed 0%, #2787d9 100%);
+  box-shadow:
+    0 9px 22px color-mix(in oklab, #2787d9 25%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 45%, transparent);
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 13px 28px color-mix(in oklab, #2787d9 34%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 50%, transparent);
+}
+
+.assistant-sidebar-link {
+  min-height: 46px;
+  font-size: 13px;
+}
+
+.assistant-sidebar-link-active {
+  background: color-mix(in oklab, var(--primary) 13%, var(--card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 15%, transparent);
+}
+
+.assistant-message {
+  padding: 15px 17px;
+}
+
+.assistant-message-text,
+.assistant-composer textarea {
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.assistant-message-label,
+.assistant-disclaimer {
+  font-size: 10px;
+}
+
+.assistant-composer {
+  border-radius: 18px;
+  padding: 11px 11px 32px 16px;
+}
+
+.assistant-composer:focus-within {
+  border-color: color-mix(in oklab, var(--primary) 56%, var(--border));
+  box-shadow:
+    0 0 0 4px color-mix(in oklab, var(--primary) 10%, transparent),
+    0 12px 30px color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+
+.assistant-plan > p,
+.assistant-plan-program li p,
+.assistant-plan-risks li {
+  font-size: 12px;
+}
+
+.assistant-plan-program li strong {
+  font-size: 13px;
+}
+
+.assistant-plan-program li span {
+  font-size: 11px;
+}
+
+.event-list-description {
+  font-size: 12px;
+}
+
+.event-list-meta span {
+  font-size: 11px;
+}
+
+.form-field {
+  font-size: 13px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  min-height: 46px;
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--card) 65%, var(--background));
+  font-size: 14px;
+}
+
+.form-field textarea {
+  min-height: 128px;
+}
+
+.dashboard-nav a,
+.desktop-nav a {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    width: calc(100% - 38px);
+    background: color-mix(in oklab, var(--background) 88%, transparent);
+  }
+
+  .header-login {
+    display: none;
+  }
+
+  .header-cta {
+    white-space: nowrap;
+    padding-inline: 10px;
+    font-size: 10px;
+  }
+
+  .assistant-sidebar {
+    background: color-mix(in oklab, var(--card) 88%, transparent);
+  }
+
+  .assistant-sidebar-link {
+    min-height: 40px;
+    font-size: 11px;
+  }
+
+  .assistant-message {
+    padding: 12px 14px;
+  }
+
+  .assistant-message-text,
+  .assistant-composer textarea {
+    font-size: 13px;
+  }
+}
