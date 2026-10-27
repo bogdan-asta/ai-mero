@@ -5,7 +5,9 @@ import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
+import { EventTeamBriefDownload } from "@/components/events/event-team-brief-download";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 const programSchema = z.array(
   z.object({
@@ -95,6 +97,7 @@ async function EventDetailContent({
             <p>{event.format || "Мероприятие"}{formattedDate ? ` · ${formattedDate}` : ""}</p>
           </div>
           <div className="event-detail-actions">
+            {isOwner && <EventTeamBriefDownload event={event} />}
             <Link className="button button-primary" href={`/events/${event.id}/assistant`}>
               <Sparkles size={15} /> Спросить ИИ
             </Link>
@@ -181,9 +184,5 @@ async function EventDetailContent({
 }
 
 function EventLoading() {
-  return (
-    <main className="app-page">
-      <div className="app-page-inner"><p>Загружаем мероприятие…</p></div>
-    </main>
-  );
+  return <PageLoading message="Загружаем мероприятие" variant="detail" />;
 }

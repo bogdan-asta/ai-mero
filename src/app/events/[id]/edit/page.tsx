@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { EventForm } from "@/components/events/event-form";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function EditEventPage({
   params,
@@ -62,9 +63,5 @@ async function EditEventContent({
 }
 
 function EditEventLoading() {
-  return (
-    <main className="app-page">
-      <div className="app-page-inner"><p>Загружаем мероприятие…</p></div>
-    </main>
-  );
+  return <PageLoading message="Загружаем данные мероприятия" variant="form" />;
 }

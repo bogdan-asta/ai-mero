@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { OnboardingForm } from "@/components/auth/onboarding-form";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function OnboardingPage() {
   return (
@@ -54,9 +55,5 @@ async function OnboardingContent() {
 }
 
 function OnboardingLoading() {
-  return (
-    <main className="auth-page">
-      <section className="auth-card"><p>Загружаем ваш профиль…</p></section>
-    </main>
-  );
+  return <PageLoading message="Загружаем ваш профиль" variant="auth" />;
 }

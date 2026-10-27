@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { EventAssistant } from "@/components/ai/event-assistant";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function EventAssistantPage({
   params,
@@ -93,7 +94,7 @@ async function EventAssistantContent({
 }
 
 function AssistantLoading() {
-  return <main className="assistant-page"><p>Загружаем помощника…</p></main>;
+  return <PageLoading message="Готовим помощника EventAI" variant="assistant" />;
 }
 
 function AssistantError({ message }: { message: string }) {

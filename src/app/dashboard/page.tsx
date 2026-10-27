@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { DashboardView } from "@/components/dashboard/dashboard-view";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function DashboardPage() {
   return (
@@ -72,9 +73,5 @@ async function DashboardContent() {
 }
 
 function DashboardLoading() {
-  return (
-    <main className="dashboard-page">
-      <section className="dashboard-card"><p>Загружаем EventAI…</p></section>
-    </main>
-  );
+  return <PageLoading message="Загружаем EventAI" variant="dashboard" />;
 }

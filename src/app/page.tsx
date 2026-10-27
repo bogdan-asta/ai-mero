@@ -74,8 +74,8 @@ export default function Home() {
 
         <div className="header-actions">
           <a className="header-login" href="/sign-in">Войти</a>
-          <a className="button button-dark header-cta" href="/sign-up">
-            Начать бесплатно <ArrowUpRight size={16} />
+          <a className="button button-primary header-cta" href="#preview">
+            Посмотреть демо <ArrowDown size={15} />
           </a>
           <ThemeToggle />
         </div>
@@ -85,7 +85,7 @@ export default function Home() {
         <div className="hero-copy">
           <div className="eyebrow">
             <span className="eyebrow-sparkle"><Sparkles size={13} /></span>
-            Ваш помощник в организации событий
+            Планируйте события без лишней суеты
           </div>
           <h1>
             Хорошее событие
@@ -93,27 +93,27 @@ export default function Home() {
             начинается <span className="gradient-text">с идеи.</span>
           </h1>
           <p className="hero-description">
-            EventAI превратит вашу задумку в понятный план, поможет собрать
-            команду и подготовит документы. Чтобы вы занимались событием, а не
-            бумагами.
+            От первой идеи до готового плана: программа, задачи и документы
+            для вашего события — в одном спокойном и понятном пространстве.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="/sign-up">
-              Попробовать бесплатно <ArrowRight size={17} />
+            <a className="button button-primary" href="#preview">
+              Посмотреть демо без регистрации <ArrowDown size={16} />
             </a>
-            <a className="text-link" href="#how-it-works">
-              Узнать, как это работает <ArrowDown size={15} />
+            <a className="text-link" href="/sign-up">
+              Создать аккаунт <ArrowUpRight size={15} />
             </a>
           </div>
-          <div className="hero-proof">
-            <div className="avatar-stack" aria-hidden="true">
-              <span>А</span><span>М</span><span>Е</span><span>+</span>
-            </div>
-            <p><strong>Для тех, кто собирает людей</strong><br />Студенты, команды и организаторы</p>
+          <div className="hero-access-note">
+            <CheckCircle2 aria-hidden="true" size={16} />
+            <p>
+              Сначала спокойно осмотритесь. Аккаунт понадобится, только чтобы
+              создать и сохранить своё мероприятие.
+            </p>
           </div>
         </div>
 
-        <div aria-label="Пример плана мероприятия" className="hero-visual">
+        <div aria-label="Пример плана мероприятия" className="hero-visual" id="preview">
           <div className="visual-glow" />
           <div className="floating-note note-top">
             <span className="note-icon note-icon-purple"><Sparkles size={15} /></span>
@@ -124,7 +124,7 @@ export default function Home() {
           <div className="event-card">
             <div className="event-card-top">
               <span className="event-label"><span className="live-dot" /> НОВОЕ МЕРОПРИЯТИЕ</span>
-              <button aria-label="Дополнительные действия" className="dots-button" type="button">···</button>
+              <span className="demo-label">ДЕМО</span>
             </div>
             <h2>День идей и технологий</h2>
             <p className="event-subtitle">Встречаем тех, кто меняет будущее</p>
@@ -196,7 +196,7 @@ export default function Home() {
             <h2>От задумки<br />до <span>«всё готово».</span></h2>
             <p>Не нужно сразу знать каждый шаг. Начните с того, что уже есть.</p>
             <a className="button button-primary" href="/sign-up">
-              Начать с идеи <ArrowRight size={17} />
+              Создать своё событие <ArrowRight size={17} />
             </a>
           </div>
           <div className="step-list">
@@ -216,7 +216,7 @@ export default function Home() {
         <div className="cta-sparkle cta-sparkle-two"><Sparkles size={12} /></div>
         <span className="section-kicker">ВАША ИДЕЯ УЖЕ ЖДЁТ</span>
         <h2>А что вы хотите<br />организовать?</h2>
-        <p>Начните с пары слов — остальное продумаем вместе.</p>
+        <p>Посмотрите пример без регистрации. Чтобы сохранить свою идею, понадобится аккаунт.</p>
         <a className="button button-light" href="/sign-up">
           Давайте начнём <ArrowRight size={17} />
         </a>

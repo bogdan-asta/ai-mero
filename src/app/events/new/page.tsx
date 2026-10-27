@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { EventForm } from "@/components/events/event-form";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function NewEventPage() {
   return (
@@ -27,9 +28,5 @@ async function NewEventContent() {
 }
 
 function EventFormLoading() {
-  return (
-    <main className="app-page">
-      <div className="app-page-inner"><p>Подготавливаем форму…</p></div>
-    </main>
-  );
+  return <PageLoading message="Готовим форму события" variant="form" />;
 }

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { EventListView } from "@/components/events/event-list-view";
 import { createClient } from "@/lib/supabase/server";
+import { PageLoading } from "@/components/ui/page-loading";
 
 export default function EventsPage() {
   return (
@@ -60,9 +61,5 @@ async function EventsContent() {
 }
 
 function EventsLoading() {
-  return (
-    <main className="app-page">
-      <div className="app-page-inner"><p>Загружаем мероприятия…</p></div>
-    </main>
-  );
+  return <PageLoading message="Загружаем ваши мероприятия" variant="events" />;
 }
