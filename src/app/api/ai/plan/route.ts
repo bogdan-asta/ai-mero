@@ -3,13 +3,42 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { createOpenRouterModel } from "@/lib/ai/openrouter";
 import { eventPlanSchema } from "@/lib/ai/schemas";
-import { eventAssistantSystemPrompt } from "@/lib/ai/system-prompt";
+import { eventPlanSystemPrompt } from "@/lib/ai/system-prompt";
 import { createClient } from "@/lib/supabase/server";
 
 const requestSchema = z.object({ eventId: z.string().uuid() });
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
+}
+
+function findNonRussianFields(plan: z.infer<typeof eventPlanSchema>) {
+  const fields: string[] = [];
+  const hasEnglishDominance = (value: string) => {
+    const russianLetters = value.match(/[А-Яа-яЁё]/g)?.length ?? 0;
+    const latinWords = value.match(/[A-Za-z]+/g) ?? [];
+    const nonBrandLatinLetters = latinWords
+      .filter((word) => !["ai", "eventai", "mvp"].includes(word.toLowerCase()))
+      .join("").length;
+
+    return nonBrandLatinLetters > russianLetters;
+  };
+
+  if (hasEnglishDominance(plan.goal)) fields.push("цель");
+  if (hasEnglishDominance(plan.targetAudience)) fields.push("аудитория");
+  if (hasEnglishDominance(plan.format)) fields.push("формат");
+  plan.program.forEach((item, index) => {
+    if (hasEnglishDominance(item.title) || hasEnglishDominance(item.description)) {
+      fields.push(`пункт программы ${index + 1}`);
+    }
+  });
+  plan.risks.forEach((risk, index) => {
+    if (hasEnglishDominance(risk.title) || hasEnglishDominance(risk.mitigation)) {
+      fields.push(`риск ${index + 1}`);
+    }
+  });
+
+  return fields;
 }
 
 async function saveUsage(
@@ -101,7 +130,7 @@ export async function POST(request: NextRequest) {
       `Бюджет: ${event.budget ?? "не указан"}`,
       `Площадка: ${event.venue_name || "не указана"}`,
     ].join("\n");
-    const basePrompt = `Подготовь проект концепции и программы мероприятия. Используй только переданные факты; неизвестные сведения не выдумывай. Время в расписании указывай как пример или оставляй нейтральное время, если дата/время неизвестны. Для рисков укажи короткую меру снижения риска.
+    const basePrompt = `Подготовь на русском языке проект концепции и программы мероприятия. Все текстовые значения в результате должны быть на русском языке; не копируй английские формулировки в цель, аудиторию, формат, программу или риски. Используй только переданные факты; неизвестные сведения не выдумывай. Время в расписании указывай как пример или оставляй нейтральное время, если дата/время неизвестны. Для рисков укажи короткую меру снижения риска.
 
 Данные мероприятия:
 ${eventFacts}`;
@@ -110,8 +139,9 @@ ${eventFacts}`;
         model,
         schema: eventPlanSchema,
         schemaName: "event_plan",
-        system: `${eventAssistantSystemPrompt}\nВерни только объект, соответствующий схеме. Не включай в результат служебные пояснения.`,
+        system: eventPlanSystemPrompt,
         prompt,
+        temperature: 0,
         maxRetries: 0,
       });
 
@@ -137,14 +167,52 @@ ${eventFacts}`;
       );
     }
 
-    await saveUsage(
-      supabase,
-      user.id,
-      event.id,
-      result.response.modelId || modelId,
-      result.usage.inputTokens,
-      result.usage.outputTokens,
-    );
+    const nonRussianFields = findNonRussianFields(result.object);
+    if (nonRussianFields.length > 0) {
+      await saveUsage(
+        supabase,
+        user.id,
+        event.id,
+        result.response.modelId || modelId,
+        result.usage.inputTokens,
+        result.usage.outputTokens,
+      );
+
+      result = await generatePlan(
+        `${basePrompt}
+
+Исправь предыдущий результат: в этих полях преобладает английский язык: ${nonRussianFields.join(", ")}.
+Переведи их на естественный русский язык, сохранив смысл, факты, время, длительность и структуру. Не меняй официальные названия и бренд EventAI. Во всех остальных полях тоже используй русский язык.
+
+Предыдущий результат:
+${JSON.stringify(result.object)}`,
+      );
+
+      await saveUsage(
+        supabase,
+        user.id,
+        event.id,
+        result.response.modelId || modelId,
+        result.usage.inputTokens,
+        result.usage.outputTokens,
+      );
+
+      if (findNonRussianFields(result.object).length > 0) {
+        return jsonError(
+          "Модель не смогла подготовить план на русском языке. Попробуйте ещё раз.",
+          502,
+        );
+      }
+    } else {
+      await saveUsage(
+        supabase,
+        user.id,
+        event.id,
+        result.response.modelId || modelId,
+        result.usage.inputTokens,
+        result.usage.outputTokens,
+      );
+    }
 
     return NextResponse.json({ plan: result.object });
   } catch (error) {

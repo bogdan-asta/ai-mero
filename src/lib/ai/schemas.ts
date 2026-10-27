@@ -22,16 +22,16 @@ export const eventUpdateProposalSchema = z.object({
 });
 
 export const eventPlanSchema = z.object({
-  goal: z.string().min(10).max(1000),
-  targetAudience: z.string().min(5).max(1000),
-  format: z.string().min(2).max(80),
+  goal: z.string().min(10).max(1000).describe("Цель мероприятия, сформулированная на русском языке."),
+  targetAudience: z.string().min(5).max(1000).describe("Описание целевой аудитории на русском языке."),
+  format: z.string().min(2).max(80).describe("Формат мероприятия на русском языке."),
   program: z
     .array(
       z.object({
-        startTime: z.string().max(30),
-        durationMinutes: z.number().int().positive().max(720),
-        title: z.string().min(2).max(120),
-        description: z.string().min(2).max(500),
+        startTime: z.string().max(30).describe("Время начала, например 10:00."),
+        durationMinutes: z.number().int().positive().max(720).describe("Длительность пункта в минутах."),
+        title: z.string().min(2).max(120).describe("Название пункта программы на русском языке."),
+        description: z.string().min(2).max(500).describe("Краткое описание пункта программы на русском языке."),
       }),
     )
     .min(1)
@@ -39,9 +39,9 @@ export const eventPlanSchema = z.object({
   risks: z
     .array(
       z.object({
-        title: z.string().min(2).max(120),
-        mitigation: z.string().min(2).max(400),
-        likelihood: z.enum(["low", "medium", "high"]),
+        title: z.string().min(2).max(120).describe("Название риска на русском языке."),
+        mitigation: z.string().min(2).max(400).describe("Мера снижения риска на русском языке."),
+        likelihood: z.enum(["low", "medium", "high"]).describe("Вероятность риска: low, medium или high."),
       }),
     )
     .max(8),
