@@ -60,9 +60,55 @@ export type AIMessage = {
   created_at: string;
 };
 
+export type EventTaskRecord = {
+  id: string;
+  event_id: string;
+  created_by: string;
+  title: string;
+  description: string;
+  due_date: string | null;
+  priority: "low" | "medium" | "high";
+  status: "todo" | "in_progress" | "done";
+  created_at: string;
+  updated_at: string;
+};
+
+export type EventEquipmentRecord = {
+  id: string;
+  event_id: string;
+  created_by: string;
+  name: string;
+  quantity: number;
+  notes: string;
+  status: "needed" | "acquired" | "rented" | "not_needed";
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      event_tasks: {
+        Row: EventTaskRecord;
+        Insert: Omit<EventTaskRecord, "id" | "created_at" | "updated_at" | "status"> &
+          Partial<Pick<EventTaskRecord, "id" | "created_at" | "updated_at" | "status">>;
+        Update: Partial<
+          Pick<EventTaskRecord, "title" | "description" | "due_date" | "priority" | "status">
+        >;
+        Relationships: [];
+      };
+      event_equipment: {
+        Row: EventEquipmentRecord;
+        Insert: Omit<
+          EventEquipmentRecord,
+          "id" | "created_at" | "updated_at" | "status" | "quantity" | "notes"
+        > &
+          Partial<
+            Pick<EventEquipmentRecord, "id" | "created_at" | "updated_at" | "status" | "quantity" | "notes">
+          >;
+        Update: Partial<Pick<EventEquipmentRecord, "name" | "quantity" | "notes" | "status">>;
+        Relationships: [];
+      };
       ai_threads: {
         Row: AIThread;
         Insert: Omit<AIThread, "id" | "created_at"> &

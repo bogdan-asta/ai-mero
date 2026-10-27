@@ -1873,6 +1873,67 @@
 .assistant-plan-readonly { margin-top: 14px; color: var(--muted-foreground); font-size: 10px; }
 .assistant-plan-message { margin-bottom: 12px; }
 
+.planning-module {
+  display: grid;
+  gap: 18px;
+  margin-top: 23px;
+  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 21px;
+}
+
+.planning-module-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.planning-module-heading h2 { margin-top: 7px; font-size: 21px; font-weight: 680; letter-spacing: -0.5px; }
+.planning-module-heading p { margin-top: 6px; color: var(--muted-foreground); font-size: 11px; }
+.planning-count { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 999px; background: var(--background); padding: 6px 9px; color: var(--muted-foreground); font-size: 9px; }
+.planning-create-form { display: grid; grid-template-columns: minmax(190px, 1.5fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr); gap: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--background); padding: 14px; }
+.planning-create-form .form-field { gap: 6px; }
+.planning-create-form .form-field > span { font-size: 10px; }
+.planning-create-form .form-field input,
+.planning-create-form .form-field select,
+.equipment-actions select { width: 100%; min-height: 36px; border: 1px solid var(--input); border-radius: 8px; outline: none; background: var(--card); padding: 7px 9px; color: var(--foreground); font: inherit; font-size: 10px; }
+.planning-create-form .form-field input:focus,
+.planning-create-form .form-field select:focus,
+.equipment-actions select:focus { border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in oklab, var(--ring) 18%, transparent); }
+.planning-description { grid-column: span 2; }
+.planning-create-form > .button { min-height: 36px; align-self: end; justify-content: center; padding-inline: 9px; font-size: 10px; }
+.planning-form-error { grid-column: 1 / -1; margin: 0; }
+.planning-list { display: grid; gap: 9px; }
+.planning-item { display: flex; align-items: flex-start; gap: 12px; border: 1px solid var(--border); border-radius: 11px; padding: 13px; }
+.planning-item-content { min-width: 0; flex: 1; }
+.planning-item-content > strong { display: block; font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
+.planning-item-content > p { margin-top: 5px; color: var(--muted-foreground); font-size: 10px; line-height: 1.55; overflow-wrap: anywhere; }
+.planning-item-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 9px; color: var(--muted-foreground); font-size: 9px; }
+.planning-status { display: inline-flex; border-radius: 999px; background: var(--muted); padding: 4px 7px; color: var(--muted-foreground); font-size: 9px; white-space: nowrap; }
+.planning-status-in_progress,
+.equipment-status-rented { background: color-mix(in oklab, var(--chart-3) 18%, var(--card)); color: var(--foreground); }
+.planning-status-done,
+.equipment-status-acquired { background: color-mix(in oklab, var(--chart-2) 17%, var(--card)); color: var(--foreground); }
+.equipment-status-not_needed { background: var(--muted); }
+.planning-item-done .planning-item-content > strong { color: var(--muted-foreground); text-decoration: line-through; }
+.planning-check,
+.planning-delete { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; border: 1px solid var(--border); border-radius: 9px; background: var(--card); color: var(--muted-foreground); }
+.planning-check:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.planning-delete { width: 28px; height: 28px; border: 0; background: transparent; color: var(--muted-foreground); }
+.planning-delete:hover:not(:disabled) { background: color-mix(in oklab, var(--destructive) 9%, transparent); color: var(--destructive); }
+.planning-check:disabled,
+.planning-delete:disabled { cursor: not-allowed; opacity: 0.55; }
+.equipment-item { align-items: center; }
+.equipment-quantity { margin-left: 8px; color: var(--muted-foreground); font-size: 10px; font-weight: 500; }
+.equipment-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 7px; }
+.equipment-actions select { min-width: 125px; min-height: 32px; font-size: 9px; }
+.planning-empty { display: grid; min-height: 150px; justify-items: center; align-content: center; gap: 8px; border: 1px dashed var(--border); border-radius: 11px; color: var(--muted-foreground); text-align: center; }
+.planning-empty > svg { color: var(--primary); }
+.planning-empty strong { color: var(--foreground); font-size: 11px; }
+.planning-empty p { font-size: 10px; }
+
 .delete-event .auth-message { max-width: 250px; }
 
 @media (max-width: 700px) {
@@ -1906,6 +1967,14 @@
   .assistant-messages { min-height: 260px; }
   .assistant-message { max-width: 95%; }
   .assistant-plan { padding: 14px; }
+  .planning-module { padding: 15px; }
+  .planning-create-form { grid-template-columns: 1fr 1fr; }
+  .planning-create-form .form-field:first-child,
+  .planning-description { grid-column: 1 / -1; }
+  .planning-create-form > .button { grid-column: 1 / -1; }
+  .equipment-item { align-items: flex-start; flex-direction: column; }
+  .equipment-actions { width: 100%; justify-content: space-between; }
+  .equipment-actions label { flex: 1; }
   .form-grid { grid-template-columns: 1fr; }
 }
 

@@ -47,6 +47,21 @@ async function EventAssistantContent({
     notFound();
   }
 
+  let canApplyPlan = event.created_by === user.id;
+  if (!canApplyPlan) {
+    const { data: membership, error: membershipError } = await supabase
+      .from("event_members")
+      .select("role")
+      .eq("event_id", event.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (membershipError) {
+      return <AssistantError message={membershipError.message} />;
+    }
+    canApplyPlan = membership?.role === "organizer";
+  }
+
   const { data: threads, error: threadError } = await supabase
     .from("ai_threads")
     .select("id")
@@ -85,7 +100,7 @@ async function EventAssistantContent({
     <EventAssistant
       eventId={event.id}
       eventTitle={event.title}
-      canApplyPlan={event.created_by === user.id}
+      canApplyPlan={canApplyPlan}
       initialMessages={initialMessages}
       initialThreadId={thread?.id ?? null}
     />

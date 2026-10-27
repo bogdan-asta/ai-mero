@@ -5,8 +5,14 @@ import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
+import { EventEquipment } from "@/components/events/event-equipment";
+import { EventTasks } from "@/components/events/event-tasks";
 import { createClient } from "@/lib/supabase/server";
-import type { EventRecord } from "@/lib/supabase/database.types";
+import type {
+  EventEquipmentRecord,
+  EventRecord,
+  EventTaskRecord,
+} from "@/lib/supabase/database.types";
 
 const eventTabs = [
   { key: "overview", label: "Обзор" },
@@ -90,19 +96,75 @@ async function EventDetailContent({
     notFound();
   }
 
+  let canManage = event.created_by === user.id;
+  if (!canManage) {
+    const { data: membership, error: membershipError } = await supabase
+      .from("event_members")
+      .select("role")
+      .eq("event_id", event.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (membershipError) {
+      return <EventLoadError message={membershipError.message} />;
+    }
+    canManage = membership?.role === "organizer";
+  }
+
+  let tasks: EventTaskRecord[] = [];
+  let equipment: EventEquipmentRecord[] = [];
+
+  if (activeTab === "tasks") {
+    const { data, error: taskError } = await supabase
+      .from("event_tasks")
+      .select("*")
+      .eq("event_id", event.id)
+      .order("due_date", { ascending: true })
+      .order("created_at", { ascending: false });
+
+    if (taskError) {
+      return <EventLoadError message={taskError.message} />;
+    }
+    tasks = data;
+  } else if (activeTab === "equipment") {
+    const { data, error: equipmentError } = await supabase
+      .from("event_equipment")
+      .select("*")
+      .eq("event_id", event.id)
+      .order("name", { ascending: true });
+
+    if (equipmentError) {
+      return <EventLoadError message={equipmentError.message} />;
+    }
+    equipment = data;
+  }
+
   return (
-    <EventDetailView event={event} userId={user.id} activeTab={activeTab} />
+    <EventDetailView
+      event={event}
+      userId={user.id}
+      canManage={canManage}
+      activeTab={activeTab}
+      tasks={tasks}
+      equipment={equipment}
+    />
   );
 }
 
 function EventDetailView({
   event,
   userId,
+  canManage,
   activeTab,
+  tasks,
+  equipment,
 }: {
   event: EventRecord;
   userId: string;
+  canManage: boolean;
   activeTab: EventTab;
+  tasks: EventTaskRecord[];
+  equipment: EventEquipmentRecord[];
 }) {
   const isOwner = event.created_by === userId;
   const parsedProgram = programSchema.safeParse(event.program);
@@ -195,6 +257,10 @@ function EventDetailView({
               </dl>
             </aside>
           </div>
+        ) : activeTab === "tasks" ? (
+          <EventTasks eventId={event.id} initialTasks={tasks} canManage={canManage} />
+        ) : activeTab === "equipment" ? (
+          <EventEquipment eventId={event.id} initialEquipment={equipment} canManage={canManage} />
         ) : (
           <section className="event-module-placeholder">
             <span className="section-kicker">РАЗДЕЛ МЕРОПРИЯТИЯ</span>
@@ -202,6 +268,18 @@ function EventDetailView({
             <p>Раздел подключается на следующем этапе. Данные мероприятия уже сохранены.</p>
           </section>
         )}
+      </div>
+    </main>
+  );
+}
+
+function EventLoadError({ message }: { message: string }) {
+  return (
+    <main className="app-page">
+      <div className="app-page-inner">
+        <p className="auth-message auth-message-error" role="alert">
+          Не удалось загрузить данные мероприятия: {message}
+        </p>
       </div>
     </main>
   );
