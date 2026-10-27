@@ -85,9 +85,71 @@ export type EventEquipmentRecord = {
   updated_at: string;
 };
 
+export type VenueRecord = {
+  id: string;
+  created_by: string;
+  name: string;
+  description: string;
+  address: string;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type VenueRoomRecord = {
+  id: string;
+  venue_id: string;
+  name: string;
+  capacity: number;
+  hourly_rate: number | null;
+  equipment: string[];
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type EventBookingRecord = {
+  id: string;
+  event_id: string;
+  room_id: string;
+  requested_by: string;
+  event_title: string;
+  guest_count: number | null;
+  event_date: string | null;
+  venue_name: string;
+  room_name: string;
+  starts_at: string;
+  ends_at: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  organizer_note: string;
+  admin_note: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      venues: {
+        Row: VenueRecord;
+        Insert: Omit<VenueRecord, "id" | "created_at" | "updated_at" | "active"> &
+          Partial<Pick<VenueRecord, "id" | "created_at" | "updated_at" | "active">>;
+        Update: Partial<Pick<VenueRecord, "name" | "description" | "address" | "active">>;
+        Relationships: [];
+      };
+      venue_rooms: {
+        Row: VenueRoomRecord;
+        Insert: Omit<VenueRoomRecord, "id" | "created_at" | "updated_at" | "active" | "hourly_rate" | "equipment"> &
+          Partial<Pick<VenueRoomRecord, "id" | "created_at" | "updated_at" | "active" | "hourly_rate" | "equipment">>;
+        Update: Partial<Pick<VenueRoomRecord, "name" | "capacity" | "hourly_rate" | "equipment" | "active">>;
+        Relationships: [];
+      };
+      event_bookings: {
+        Row: EventBookingRecord;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
       event_tasks: {
         Row: EventTaskRecord;
         Insert: Omit<EventTaskRecord, "id" | "created_at" | "updated_at" | "status"> &
@@ -207,9 +269,39 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      book_event_room: {
+        Args: {
+          target_event_id: string;
+          target_room_id: string;
+          target_starts_at: string;
+          target_ends_at: string;
+          target_organizer_note?: string;
+        };
+        Returns: string;
+      };
+      cancel_event_booking: {
+        Args: { target_booking_id: string };
+        Returns: undefined;
+      };
       consume_ai_rate_limit: {
         Args: { maximum_requests: number; window_seconds: number };
         Returns: boolean;
+      };
+      has_venue_admin_role: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      is_venue_owner: {
+        Args: { target_venue_id: string };
+        Returns: boolean;
+      };
+      review_event_booking: {
+        Args: {
+          target_booking_id: string;
+          decision: string;
+          response_note?: string;
+        };
+        Returns: undefined;
       };
     };
     Enums: Record<string, never>;

@@ -7,11 +7,15 @@ import { z } from "zod";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import { EventEquipment } from "@/components/events/event-equipment";
 import { EventTasks } from "@/components/events/event-tasks";
+import { EventVenue } from "@/components/events/event-venue";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  EventBookingRecord,
   EventEquipmentRecord,
   EventRecord,
   EventTaskRecord,
+  VenueRecord,
+  VenueRoomRecord,
 } from "@/lib/supabase/database.types";
 
 const eventTabs = [
@@ -113,6 +117,9 @@ async function EventDetailContent({
 
   let tasks: EventTaskRecord[] = [];
   let equipment: EventEquipmentRecord[] = [];
+  let venues: VenueRecord[] = [];
+  let rooms: (VenueRoomRecord & { venueName: string; venueAddress: string })[] = [];
+  let bookings: EventBookingRecord[] = [];
 
   if (activeTab === "tasks") {
     const { data, error: taskError } = await supabase
@@ -137,6 +144,49 @@ async function EventDetailContent({
       return <EventLoadError message={equipmentError.message} />;
     }
     equipment = data;
+  } else if (activeTab === "venue") {
+    const { data: venueData, error: venueError } = await supabase
+      .from("venues")
+      .select("*")
+      .eq("active", true)
+      .order("name", { ascending: true });
+
+    if (venueError) {
+      return <EventLoadError message={venueError.message} />;
+    }
+    venues = venueData;
+
+    if (venues.length > 0) {
+      const { data: roomData, error: roomError } = await supabase
+        .from("venue_rooms")
+        .select("*")
+        .in("venue_id", venues.map((venue) => venue.id))
+        .eq("active", true)
+        .order("capacity", { ascending: true });
+
+      if (roomError) {
+        return <EventLoadError message={roomError.message} />;
+      }
+
+      const venueById = new Map(venues.map((venue) => [venue.id, venue]));
+      rooms = roomData.flatMap((room) => {
+        const venue = venueById.get(room.venue_id);
+        return venue
+          ? [{ ...room, venueName: venue.name, venueAddress: venue.address }]
+          : [];
+      });
+    }
+
+    const { data: bookingData, error: bookingError } = await supabase
+      .from("event_bookings")
+      .select("*")
+      .eq("event_id", event.id)
+      .order("created_at", { ascending: false });
+
+    if (bookingError) {
+      return <EventLoadError message={bookingError.message} />;
+    }
+    bookings = bookingData;
   }
 
   return (
@@ -147,6 +197,9 @@ async function EventDetailContent({
       activeTab={activeTab}
       tasks={tasks}
       equipment={equipment}
+      venues={venues}
+      rooms={rooms}
+      bookings={bookings}
     />
   );
 }
@@ -158,6 +211,9 @@ function EventDetailView({
   activeTab,
   tasks,
   equipment,
+  venues,
+  rooms,
+  bookings,
 }: {
   event: EventRecord;
   userId: string;
@@ -165,6 +221,9 @@ function EventDetailView({
   activeTab: EventTab;
   tasks: EventTaskRecord[];
   equipment: EventEquipmentRecord[];
+  venues: VenueRecord[];
+  rooms: (VenueRoomRecord & { venueName: string; venueAddress: string })[];
+  bookings: EventBookingRecord[];
 }) {
   const isOwner = event.created_by === userId;
   const parsedProgram = programSchema.safeParse(event.program);
@@ -261,6 +320,16 @@ function EventDetailView({
           <EventTasks eventId={event.id} initialTasks={tasks} canManage={canManage} />
         ) : activeTab === "equipment" ? (
           <EventEquipment eventId={event.id} initialEquipment={equipment} canManage={canManage} />
+        ) : activeTab === "venue" ? (
+          <EventVenue
+            eventId={event.id}
+            eventDate={event.event_date}
+            guestCount={event.guests_count}
+            venues={venues}
+            rooms={rooms}
+            bookings={bookings}
+            canManage={canManage}
+          />
         ) : (
           <section className="event-module-placeholder">
             <span className="section-kicker">РАЗДЕЛ МЕРОПРИЯТИЯ</span>

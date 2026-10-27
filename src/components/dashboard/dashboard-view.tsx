@@ -53,6 +53,7 @@ export function DashboardView({
         <nav className="dashboard-nav" aria-label="Разделы приложения">
           <Link className="dashboard-nav-active" href="/dashboard">Главная</Link>
           <Link href="/events">Мероприятия</Link>
+          <Link href="/venues">Площадки</Link>
         </nav>
         <div className="dashboard-header-actions">
           <Link className="button button-primary dashboard-new-event" href="/events/new">

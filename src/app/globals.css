@@ -1934,6 +1934,75 @@
 .planning-empty strong { color: var(--foreground); font-size: 11px; }
 .planning-empty p { font-size: 10px; }
 
+.venue-page-heading { margin-top: 20px; }
+.venue-admin-panel { display: grid; gap: 16px; margin-top: 22px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 18px; }
+.venue-admin-panel > header h2 { margin-top: 6px; font-size: 16px; font-weight: 680; }
+.venue-admin-forms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.venue-admin-form { display: grid; align-content: start; gap: 12px; border: 1px solid var(--border); border-radius: 11px; background: var(--background); padding: 14px; }
+.venue-admin-form h3 { font-size: 12px; font-weight: 650; }
+.venue-admin-form .form-field { gap: 6px; font-size: 10px; }
+.venue-admin-form .form-field > span { font-size: 10px; }
+.venue-admin-form .form-field input,
+.venue-admin-form .form-field select { min-height: 36px; border-radius: 8px; padding-inline: 9px; font-size: 10px; }
+.venue-admin-form .form-field textarea { min-height: 72px; border-radius: 8px; font-size: 10px; }
+.venue-admin-form > .button { min-height: 36px; justify-content: center; font-size: 10px; }
+.venue-form-grid { display: grid; grid-template-columns: 1.4fr 0.8fr; gap: 9px; }
+.venue-directory { display: grid; gap: 13px; margin-top: 20px; }
+.venue-card { border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 18px; }
+.venue-card-inactive { opacity: 0.72; }
+.venue-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.venue-card-heading h2 { margin-top: 6px; font-size: 17px; font-weight: 680; }
+.venue-card-heading p { display: flex; align-items: center; gap: 5px; margin-top: 6px; color: var(--muted-foreground); font-size: 10px; }
+.venue-toggle { min-height: 32px; padding-inline: 9px; font-size: 9px; }
+.venue-description { margin-top: 12px; color: var(--muted-foreground); font-size: 11px; line-height: 1.65; }
+.venue-no-rooms { margin-top: 12px; color: var(--muted-foreground); font-size: 10px; line-height: 1.6; }
+.venue-room-list { display: grid; gap: 8px; margin-top: 13px; }
+.venue-room-list > li { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--background); padding: 11px 12px; }
+.venue-room-list > li > div { display: grid; grid-template-columns: repeat(3, max-content); align-items: center; gap: 7px 12px; }
+.venue-room-list > li strong { font-size: 11px; }
+.venue-room-list > li span { color: var(--muted-foreground); font-size: 9px; }
+.venue-room-list > li span svg { display: inline-block; margin-right: 4px; vertical-align: middle; }
+.venue-room-list > li p { grid-column: 1 / -1; color: var(--muted-foreground); font-size: 9px; }
+.venue-room-inactive { opacity: 0.55; }
+.venue-room-toggle { flex: 0 0 auto; color: var(--muted-foreground); font-size: 9px; text-decoration: underline; }
+.venue-room-toggle:hover { color: var(--primary); }
+.venue-booking-list { display: grid; gap: 9px; }
+.venue-booking-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--background); padding: 12px; }
+.venue-booking-item > div:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 9px; }
+.venue-booking-item strong { font-size: 11px; }
+.venue-booking-item p,
+.venue-booking-item time,
+.venue-booking-item > div > span:not(.planning-status) { color: var(--muted-foreground); font-size: 9px; }
+.booking-status-pending { background: color-mix(in oklab, var(--chart-3) 18%, var(--card)); color: var(--foreground); }
+.booking-status-approved { background: color-mix(in oklab, var(--chart-2) 17%, var(--card)); color: var(--foreground); }
+.booking-status-rejected,
+.booking-status-cancelled { background: color-mix(in oklab, var(--destructive) 10%, var(--card)); color: var(--destructive); }
+.venue-booking-actions { display: flex; flex: 0 0 auto; gap: 7px; }
+.venue-booking-actions .button { min-height: 32px; padding-inline: 9px; font-size: 9px; }
+.venue-event-module { margin-bottom: 30px; }
+.venue-catalog-link { flex: 0 0 auto; white-space: nowrap; font-size: 9px; }
+.venue-booking-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--background); padding: 14px; }
+.venue-booking-form .form-field { gap: 6px; font-size: 10px; }
+.venue-booking-form .form-field > span { font-size: 10px; }
+.venue-booking-form .form-field input,
+.venue-booking-form .form-field select { min-height: 36px; border-radius: 8px; padding-inline: 9px; font-size: 10px; }
+.venue-room-select,
+.venue-note-field { grid-column: 1 / -1; }
+.venue-booking-form > .button { min-height: 36px; justify-content: center; font-size: 10px; }
+.venue-form-error,
+.venue-booking-hint { grid-column: 1 / -1; margin: 0; }
+.venue-booking-hint,
+.venue-readonly-note,
+.venue-event-date { color: var(--muted-foreground); font-size: 9px; line-height: 1.6; }
+.venue-event-content { display: grid; gap: 18px; }
+.venue-event-content h3 { font-size: 12px; font-weight: 680; }
+.venue-event-room-list { margin-top: 9px; }
+.venue-event-room-list > li > div { grid-template-columns: 1fr; gap: 6px; }
+.venue-event-room-list > li > div > span:first-of-type { display: flex; align-items: center; }
+.venue-cancel-booking { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; color: var(--destructive); font-size: 9px; }
+.venue-response-note { width: 100%; }
+.venue-event-date { margin-top: -6px; }
+
 .delete-event .auth-message { max-width: 250px; }
 
 @media (max-width: 700px) {
@@ -1975,6 +2044,19 @@
   .equipment-item { align-items: flex-start; flex-direction: column; }
   .equipment-actions { width: 100%; justify-content: space-between; }
   .equipment-actions label { flex: 1; }
+  .venue-admin-forms { grid-template-columns: 1fr; }
+  .venue-form-grid { grid-template-columns: 1fr 1fr; }
+  .venue-room-list > li { align-items: flex-start; flex-direction: column; }
+  .venue-room-list > li > div { grid-template-columns: 1fr 1fr; }
+  .venue-room-list > li strong { grid-column: 1 / -1; }
+  .venue-booking-item { align-items: flex-start; flex-direction: column; }
+  .venue-booking-actions { width: 100%; }
+  .venue-booking-actions .button { flex: 1; }
+  .venue-booking-form { grid-template-columns: 1fr; }
+  .venue-room-select,
+  .venue-note-field { grid-column: auto; }
+  .venue-form-error,
+  .venue-booking-hint { grid-column: auto; }
   .form-grid { grid-template-columns: 1fr; }
 }
 
