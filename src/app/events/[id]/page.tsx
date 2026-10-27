@@ -7,14 +7,19 @@ import { z } from "zod";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import { EventEquipment } from "@/components/events/event-equipment";
 import { EventDocuments } from "@/components/events/event-documents";
+import { EventIdeas } from "@/components/events/event-ideas";
 import { EventTasks } from "@/components/events/event-tasks";
+import { EventTeam } from "@/components/events/event-team";
 import { EventVenue } from "@/components/events/event-venue";
 import { createClient } from "@/lib/supabase/server";
 import type {
   EventBookingRecord,
   EventDocumentRecord,
   EventEquipmentRecord,
+  EventIdeaSummary,
+  EventInvitationRecord,
   EventRecord,
+  EventTeamMember,
   EventTaskRecord,
   VenueRecord,
   VenueRoomRecord,
@@ -26,6 +31,8 @@ const eventTabs = [
   { key: "venue", label: "Площадка" },
   { key: "documents", label: "Документы" },
   { key: "tasks", label: "Задачи" },
+  { key: "ideas", label: "Идеи" },
+  { key: "team", label: "Команда" },
 ] as const;
 
 const programSchema = z.array(
@@ -123,6 +130,9 @@ async function EventDetailContent({
   let rooms: (VenueRoomRecord & { venueName: string; venueAddress: string })[] = [];
   let bookings: EventBookingRecord[] = [];
   let documents: EventDocumentRecord[] = [];
+  let team: EventTeamMember[] = [];
+  let invitations: EventInvitationRecord[] = [];
+  let ideas: EventIdeaSummary[] = [];
 
   if (activeTab === "tasks") {
     const { data, error: taskError } = await supabase
@@ -201,6 +211,38 @@ async function EventDetailContent({
       return <EventLoadError message={documentError.message} />;
     }
     documents = data;
+  } else if (activeTab === "team") {
+    const { data, error: teamError } = await supabase.rpc("get_event_team", {
+      target_event_id: event.id,
+    });
+
+    if (teamError) {
+      return <EventLoadError message={teamError.message} />;
+    }
+    team = data;
+
+    if (canManage) {
+      const { data: invitationData, error: invitationError } = await supabase
+        .from("event_invitations")
+        .select("*")
+        .eq("event_id", event.id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+
+      if (invitationError) {
+        return <EventLoadError message={invitationError.message} />;
+      }
+      invitations = invitationData;
+    }
+  } else if (activeTab === "ideas") {
+    const { data, error: ideaError } = await supabase.rpc("get_event_ideas", {
+      target_event_id: event.id,
+    });
+
+    if (ideaError) {
+      return <EventLoadError message={ideaError.message} />;
+    }
+    ideas = data;
   }
 
   return (
@@ -215,6 +257,9 @@ async function EventDetailContent({
       rooms={rooms}
       bookings={bookings}
       documents={documents}
+      team={team}
+      invitations={invitations}
+      ideas={ideas}
     />
   );
 }
@@ -230,6 +275,9 @@ function EventDetailView({
   rooms,
   bookings,
   documents,
+  team,
+  invitations,
+  ideas,
 }: {
   event: EventRecord;
   userId: string;
@@ -241,6 +289,9 @@ function EventDetailView({
   rooms: (VenueRoomRecord & { venueName: string; venueAddress: string })[];
   bookings: EventBookingRecord[];
   documents: EventDocumentRecord[];
+  team: EventTeamMember[];
+  invitations: EventInvitationRecord[];
+  ideas: EventIdeaSummary[];
 }) {
   const isOwner = event.created_by === userId;
   const parsedProgram = programSchema.safeParse(event.program);
@@ -349,6 +400,20 @@ function EventDetailView({
           />
         ) : activeTab === "documents" ? (
           <EventDocuments event={event} documents={documents} canManage={canManage} />
+        ) : activeTab === "team" ? (
+          <EventTeam
+            eventId={event.id}
+            members={team}
+            invitations={invitations}
+            canManage={canManage}
+          />
+        ) : activeTab === "ideas" ? (
+          <EventIdeas
+            eventId={event.id}
+            userId={userId}
+            ideas={ideas}
+            canManage={canManage}
+          />
         ) : (
           <section className="event-module-placeholder">
             <span className="section-kicker">РАЗДЕЛ МЕРОПРИЯТИЯ</span>

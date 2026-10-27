@@ -138,9 +138,95 @@ export type EventDocumentRecord = {
   updated_at: string;
 };
 
+export type EventInvitationRecord = {
+  id: string;
+  event_id: string;
+  invitee_id: string;
+  invited_by: string;
+  email: string;
+  role: "organizer" | "participant";
+  status: "pending" | "accepted" | "declined" | "cancelled";
+  created_at: string;
+  responded_at: string | null;
+};
+
+export type NotificationRecord = {
+  id: string;
+  user_id: string;
+  event_id: string | null;
+  related_id: string | null;
+  notification_type:
+    | "event_invitation"
+    | "invitation_response"
+    | "booking_request"
+    | "booking_update";
+  title: string;
+  body: string;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type EventIdeaRecord = {
+  id: string;
+  event_id: string;
+  created_by: string;
+  title: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type EventIdeaSummary = Omit<EventIdeaRecord, "updated_at"> & {
+  vote_count: number;
+  voted_by_me: boolean;
+};
+
+export type EventTeamMember = {
+  user_id: string;
+  full_name: string;
+  role: "organizer" | "participant";
+  is_owner: boolean;
+  joined_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      event_invitations: {
+        Row: EventInvitationRecord;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      notifications: {
+        Row: NotificationRecord;
+        Insert: never;
+        Update: Partial<Pick<NotificationRecord, "read_at">>;
+        Relationships: [];
+      };
+      event_ideas: {
+        Row: EventIdeaRecord;
+        Insert: Omit<EventIdeaRecord, "id" | "created_at" | "updated_at"> &
+          Partial<Pick<EventIdeaRecord, "id" | "created_at" | "updated_at">>;
+        Update: Partial<Pick<EventIdeaRecord, "title" | "description">>;
+        Relationships: [];
+      };
+      event_idea_votes: {
+        Row: {
+          event_idea_id: string;
+          event_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          event_idea_id: string;
+          event_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: never;
+        Relationships: [];
+      };
       event_documents: {
         Row: EventDocumentRecord;
         Insert: Omit<EventDocumentRecord, "id" | "created_at" | "updated_at"> &
@@ -287,6 +373,30 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      get_event_ideas: {
+        Args: { target_event_id: string };
+        Returns: EventIdeaSummary[];
+      };
+      get_event_team: {
+        Args: { target_event_id: string };
+        Returns: EventTeamMember[];
+      };
+      invite_event_member: {
+        Args: {
+          target_event_id: string;
+          target_email: string;
+          target_role?: string;
+        };
+        Returns: string;
+      };
+      cancel_event_invitation: {
+        Args: { target_invitation_id: string };
+        Returns: undefined;
+      };
+      respond_event_invitation: {
+        Args: { target_invitation_id: string; decision: string };
+        Returns: string;
+      };
       book_event_room: {
         Args: {
           target_event_id: string;
