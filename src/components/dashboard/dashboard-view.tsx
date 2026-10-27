@@ -1,19 +1,23 @@
 "use client";
 
-import { ArrowRight, CalendarDays, LogOut, Sparkles } from "lucide-react";
+import { ArrowRight, LogOut, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { EventRecord } from "@/lib/supabase/database.types";
+import { EventListView } from "@/components/events/event-list-view";
 
 export function DashboardView({
   email,
   fullName,
   organization,
+  events,
 }: {
   email: string;
   fullName: string;
   organization: string;
+  events: EventRecord[];
 }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -46,9 +50,18 @@ export function DashboardView({
           <span className="brand-mark"><Sparkles size={17} /></span>
           <span>event<span className="brand-accent">ai</span></span>
         </Link>
-        <button className="dashboard-signout" disabled={isSigningOut} onClick={signOut} type="button">
-          <LogOut size={15} /> {isSigningOut ? "Выходим…" : "Выйти"}
-        </button>
+        <nav className="dashboard-nav" aria-label="Разделы приложения">
+          <Link className="dashboard-nav-active" href="/dashboard">Главная</Link>
+          <Link href="/events">Мероприятия</Link>
+        </nav>
+        <div className="dashboard-header-actions">
+          <Link className="button button-primary dashboard-new-event" href="/events/new">
+            <Plus size={15} /> Новое
+          </Link>
+          <button className="dashboard-signout" disabled={isSigningOut} onClick={signOut} type="button">
+            <LogOut size={15} /> {isSigningOut ? "Выходим…" : "Выйти"}
+          </button>
+        </div>
       </header>
 
       <section className="dashboard-card">
@@ -60,14 +73,14 @@ export function DashboardView({
 
         {error && <p className="auth-message auth-message-error" role="alert">{error}</p>}
 
-        <div className="dashboard-empty">
-          <span className="dashboard-empty-icon"><CalendarDays size={23} /></span>
-          <h2>Пора придумать первое событие</h2>
-          <p>В следующих этапах здесь появятся мероприятия, задачи и документы.</p>
-          <button className="button button-primary" disabled type="button">
-            Создать мероприятие <ArrowRight size={16} />
-          </button>
+        <div className="dashboard-section-heading">
+          <div>
+            <h2>Ваши мероприятия</h2>
+            <p>Идеи и события, которые вы готовите.</p>
+          </div>
+          <Link className="text-link" href="/events">Все мероприятия <ArrowRight size={15} /></Link>
         </div>
+        <EventListView events={events} />
       </section>
     </main>
   );

@@ -11,9 +11,56 @@ export type Profile = {
   updated_at: string;
 };
 
+export type EventRecord = {
+  id: string;
+  created_by: string;
+  title: string;
+  idea: string;
+  description: string;
+  event_date: string | null;
+  format: string;
+  guests_count: number | null;
+  budget: number | null;
+  venue_name: string;
+  status: "draft" | "planning" | "ready" | "cancelled";
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      events: {
+        Row: EventRecord;
+        Insert: Omit<EventRecord, "id" | "created_at" | "updated_at" | "status"> &
+          Partial<Pick<EventRecord, "id" | "created_at" | "updated_at" | "status">>;
+        Update: Partial<
+          Omit<EventRecord, "id" | "created_by" | "created_at" | "updated_at">
+        >;
+        Relationships: [];
+      };
+      event_members: {
+        Row: {
+          event_id: string;
+          user_id: string;
+          role: "organizer" | "participant";
+          invited_by: string | null;
+          joined_at: string;
+        };
+        Insert: {
+          event_id: string;
+          user_id: string;
+          role?: "organizer" | "participant";
+          invited_by?: string | null;
+          joined_at?: string;
+        };
+        Update: Partial<{
+          role: "organizer" | "participant";
+          invited_by: string | null;
+          joined_at: string;
+        }>;
+        Relationships: [];
+      };
       profiles: {
         Row: Profile;
         Insert: Omit<Profile, "created_at" | "updated_at"> &

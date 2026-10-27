@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
-const protectedPaths = ["/dashboard", "/onboarding"];
+const protectedPaths = ["/dashboard", "/events", "/onboarding"];
 
 function isProtectedPath(pathname: string) {
   return protectedPaths.some(
@@ -38,5 +38,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/onboarding/:path*"],
+  matcher: ["/dashboard/:path*", "/events/:path*", "/onboarding/:path*"],
 };

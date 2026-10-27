@@ -4,7 +4,7 @@
 
 ## Текущая версия
 
-Этапы 0–1: адаптивный лендинг, темы оформления, регистрация и вход через Supabase (пароль, magic link, Google OAuth), восстановление пароля, онбординг профиля, защита маршрутов и RLS для таблицы профилей. Мероприятия и ИИ будут реализованы в следующих этапах.
+Этапы 0–2: адаптивный лендинг, темы оформления, Supabase Auth, онбординг профиля, защищённые маршруты, RLS профилей и мероприятий, создание/просмотр/редактирование/удаление мероприятий. ИИ, задачи, аудитории и документы подключаются далее по плану.
 
 ## Требования
 
@@ -40,7 +40,9 @@ npm run build
    ```
 
 5. Заполните в `.env.local` значения `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-6. Откройте **SQL Editor** в Supabase, выполните SQL из `supabase/migrations/20261027000000_profiles.sql`.
+6. Откройте **SQL Editor** в Supabase и последовательно выполните миграции из `supabase/migrations/` по возрастанию имени:
+   - `20261027000000_profiles.sql`
+   - `20261027000001_events.sql`
 7. В **Authentication → URL Configuration** укажите Site URL `http://localhost:3000` и добавьте Redirect URL `http://localhost:3000/auth/callback`.
 8. Для входа через Google включите провайдер Google в **Authentication → Providers** и настройте OAuth client ID/secret у Google. Email/password и magic link доступны без настройки Google.
 
@@ -67,7 +69,7 @@ supabase/
 DECISIONS.md            принятые технические решения
 ```
 
-Маршруты авторизации: `/sign-in`, `/sign-up`, `/forgot-password`, `/auth/update-password`. Защищённые маршруты: `/onboarding` и `/dashboard`.
+Маршруты авторизации: `/sign-in`, `/sign-up`, `/forgot-password`, `/auth/update-password`. Защищённые маршруты: `/onboarding`, `/dashboard` и `/events`. Владелец мероприятия может редактировать и удалять его; участники видят только мероприятия, в которые добавлены.
 
 ## Технические решения
 

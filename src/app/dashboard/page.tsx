@@ -44,9 +44,27 @@ async function DashboardContent() {
     redirect("/onboarding");
   }
 
+  const { data: events, error: eventsError } = await supabase
+    .from("events")
+    .select("*")
+    .order("updated_at", { ascending: false })
+    .limit(6);
+
+  if (eventsError) {
+    return (
+      <main className="dashboard-page">
+        <section className="dashboard-card">
+          <h1>Не удалось загрузить мероприятия</h1>
+          <p role="alert">{eventsError.message}</p>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <DashboardView
       email={user.email ?? ""}
+      events={events}
       fullName={profile.full_name}
       organization={profile.organization}
     />
