@@ -6,11 +6,13 @@ import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import { EventEquipment } from "@/components/events/event-equipment";
+import { EventDocuments } from "@/components/events/event-documents";
 import { EventTasks } from "@/components/events/event-tasks";
 import { EventVenue } from "@/components/events/event-venue";
 import { createClient } from "@/lib/supabase/server";
 import type {
   EventBookingRecord,
+  EventDocumentRecord,
   EventEquipmentRecord,
   EventRecord,
   EventTaskRecord,
@@ -120,6 +122,7 @@ async function EventDetailContent({
   let venues: VenueRecord[] = [];
   let rooms: (VenueRoomRecord & { venueName: string; venueAddress: string })[] = [];
   let bookings: EventBookingRecord[] = [];
+  let documents: EventDocumentRecord[] = [];
 
   if (activeTab === "tasks") {
     const { data, error: taskError } = await supabase
@@ -187,6 +190,17 @@ async function EventDetailContent({
       return <EventLoadError message={bookingError.message} />;
     }
     bookings = bookingData;
+  } else if (activeTab === "documents") {
+    const { data, error: documentError } = await supabase
+      .from("event_documents")
+      .select("*")
+      .eq("event_id", event.id)
+      .order("updated_at", { ascending: false });
+
+    if (documentError) {
+      return <EventLoadError message={documentError.message} />;
+    }
+    documents = data;
   }
 
   return (
@@ -200,6 +214,7 @@ async function EventDetailContent({
       venues={venues}
       rooms={rooms}
       bookings={bookings}
+      documents={documents}
     />
   );
 }
@@ -214,6 +229,7 @@ function EventDetailView({
   venues,
   rooms,
   bookings,
+  documents,
 }: {
   event: EventRecord;
   userId: string;
@@ -224,6 +240,7 @@ function EventDetailView({
   venues: VenueRecord[];
   rooms: (VenueRoomRecord & { venueName: string; venueAddress: string })[];
   bookings: EventBookingRecord[];
+  documents: EventDocumentRecord[];
 }) {
   const isOwner = event.created_by === userId;
   const parsedProgram = programSchema.safeParse(event.program);
@@ -330,6 +347,8 @@ function EventDetailView({
             bookings={bookings}
             canManage={canManage}
           />
+        ) : activeTab === "documents" ? (
+          <EventDocuments event={event} documents={documents} canManage={canManage} />
         ) : (
           <section className="event-module-placeholder">
             <span className="section-kicker">РАЗДЕЛ МЕРОПРИЯТИЯ</span>

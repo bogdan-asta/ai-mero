@@ -127,9 +127,27 @@ export type EventBookingRecord = {
   updated_at: string;
 };
 
+export type EventDocumentRecord = {
+  id: string;
+  event_id: string;
+  created_by: string;
+  title: string;
+  document_type: "event_order" | "invitation" | "venue_request" | "event_brief";
+  content: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      event_documents: {
+        Row: EventDocumentRecord;
+        Insert: Omit<EventDocumentRecord, "id" | "created_at" | "updated_at"> &
+          Partial<Pick<EventDocumentRecord, "id" | "created_at" | "updated_at">>;
+        Update: Partial<Pick<EventDocumentRecord, "title" | "content">>;
+        Relationships: [];
+      };
       venues: {
         Row: VenueRecord;
         Insert: Omit<VenueRecord, "id" | "created_at" | "updated_at" | "active"> &
