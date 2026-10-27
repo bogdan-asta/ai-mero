@@ -1,7 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ArrowRight, LoaderCircle, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  LoaderCircle,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -256,7 +262,43 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
     }
   }
 
+  async function signInAsGuest() {
+    setFormError("");
+    setNotice("");
+
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInAnonymously({
+        options: { data: { full_name: "Гость" } },
+      });
+      if (error) throw error;
+      if (!data.user) throw new Error("Supabase не вернул гостевого пользователя.");
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: "Гость",
+          onboarding_role: "other",
+          organization: "Локальная разработка",
+          event_interest: "Тестирование EventAI",
+          onboarding_completed: true,
+        })
+        .eq("id", data.user.id)
+        .select("id")
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profile) throw new Error("Не удалось создать профиль гостя.");
+
+      router.replace(getSafeNextPath());
+      router.refresh();
+    } catch (error) {
+      setFormError(getErrorMessage(error));
+    }
+  }
+
   const requiresPassword = mode === "sign-in" || mode === "sign-up" || mode === "update-password";
+  const isDevelopment = process.env.NODE_ENV === "development";
   const hasSupabaseConfig = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -352,6 +394,17 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
           <button className="auth-magic-link" disabled={!hasSupabaseConfig} onClick={sendMagicLink} type="button">
             Отправить ссылку для входа на email
           </button>
+          {isDevelopment && (
+            <button
+              className="button auth-secondary"
+              disabled={!hasSupabaseConfig || isSubmitting}
+              onClick={signInAsGuest}
+              type="button"
+            >
+              <UserRound size={17} />
+              Продолжить как гость
+            </button>
+          )}
         </>
       )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Bell, LogOut, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, LogOut, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,13 +13,11 @@ export function DashboardView({
   fullName,
   organization,
   events,
-  unreadNotifications,
 }: {
   email: string;
   fullName: string;
   organization: string;
   events: EventRecord[];
-  unreadNotifications: number;
 }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -55,17 +53,8 @@ export function DashboardView({
         <nav className="dashboard-nav" aria-label="Разделы приложения">
           <Link className="dashboard-nav-active" href="/dashboard">Главная</Link>
           <Link href="/events">Мероприятия</Link>
-          <Link href="/venues">Площадки</Link>
         </nav>
         <div className="dashboard-header-actions">
-          <Link
-            aria-label={`Уведомления, непрочитанных: ${unreadNotifications}`}
-            className="dashboard-notifications"
-            href="/notifications"
-          >
-            <Bell size={15} />
-            {unreadNotifications > 0 && <span>{unreadNotifications > 99 ? "99+" : unreadNotifications}</span>}
-          </Link>
           <Link className="button button-primary dashboard-new-event" href="/events/new">
             <Plus size={15} /> Новое
           </Link>

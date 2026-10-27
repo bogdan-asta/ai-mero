@@ -61,29 +61,12 @@ async function DashboardContent() {
     );
   }
 
-  const { count: unreadNotifications, error: notificationsError } = await supabase
-    .from("notifications")
-    .select("id", { count: "exact", head: true })
-    .is("read_at", null);
-
-  if (notificationsError) {
-    return (
-      <main className="dashboard-page">
-        <section className="dashboard-card">
-          <h1>Не удалось загрузить уведомления</h1>
-          <p role="alert">{notificationsError.message}</p>
-        </section>
-      </main>
-    );
-  }
-
   return (
     <DashboardView
       email={user.email ?? ""}
       events={events}
       fullName={profile.full_name}
       organization={profile.organization}
-      unreadNotifications={unreadNotifications ?? 0}
     />
   );
 }
