@@ -1,8 +1,9 @@
-import { CalendarDays, MapPin, Pencil, Users } from "lucide-react";
+import { CalendarDays, MapPin, Pencil, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
+import { z } from "zod";
 import { DeleteEventButton } from "@/components/events/delete-event-button";
 import { createClient } from "@/lib/supabase/server";
 import type { EventRecord } from "@/lib/supabase/database.types";
@@ -14,6 +15,15 @@ const eventTabs = [
   { key: "documents", label: "Документы" },
   { key: "tasks", label: "Задачи" },
 ] as const;
+
+const programSchema = z.array(
+  z.object({
+    startTime: z.string(),
+    durationMinutes: z.number(),
+    title: z.string(),
+    description: z.string(),
+  }),
+);
 
 type EventTab = (typeof eventTabs)[number]["key"];
 
@@ -95,6 +105,7 @@ function EventDetailView({
   activeTab: EventTab;
 }) {
   const isOwner = event.created_by === userId;
+  const parsedProgram = programSchema.safeParse(event.program);
 
   return (
     <main className="app-page">
@@ -106,12 +117,17 @@ function EventDetailView({
             <h1>{event.title}</h1>
             <p>{event.format || "Мероприятие"}{event.event_date ? ` · ${new Date(`${event.event_date}T12:00:00`).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}` : ""}</p>
           </div>
-          {isOwner && (
-            <div className="event-detail-actions">
-              <Link className="button button-outline" href={`/events/${event.id}/edit`}><Pencil size={15} /> Редактировать</Link>
-              <DeleteEventButton eventId={event.id} />
-            </div>
-          )}
+          <div className="event-detail-actions">
+            <Link className="button button-primary" href={`/events/${event.id}/assistant`}>
+              <Sparkles size={15} /> Спросить ИИ
+            </Link>
+            {isOwner && (
+              <>
+                <Link className="button button-outline" href={`/events/${event.id}/edit`}><Pencil size={15} /> Редактировать</Link>
+                <DeleteEventButton eventId={event.id} />
+              </>
+            )}
+          </div>
         </header>
 
         <nav aria-label="Разделы мероприятия" className="event-tabs">
@@ -133,6 +149,41 @@ function EventDetailView({
               <span className="section-kicker">ИДЕЯ</span>
               <p className="event-idea">{event.idea}</p>
               {event.description && <p className="event-description">{event.description}</p>}
+              {(event.goal || event.target_audience) && (
+                <div className="event-plan-summary">
+                  {event.goal && <p><strong>Цель:</strong> {event.goal}</p>}
+                  {event.target_audience && <p><strong>Аудитория:</strong> {event.target_audience}</p>}
+                </div>
+              )}
+              {parsedProgram.success && parsedProgram.data.length > 0 && (
+                <div className="event-program">
+                  <h2>Программа</h2>
+                  <ol>
+                    {parsedProgram.data.map((item, index) => (
+                      <li key={`${item.startTime}-${index}`}>
+                        <span>{item.startTime} · {item.durationMinutes} мин.</span>
+                        <strong>{item.title}</strong>
+                        <p>{item.description}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+              {Array.isArray(event.risks) && event.risks.length > 0 && (
+                <div className="event-plan-summary">
+                  <h2>Риски и меры</h2>
+                  {event.risks.map((risk, index) => {
+                    if (typeof risk !== "object" || risk === null || !("title" in risk) || !("mitigation" in risk)) {
+                      return null;
+                    }
+                    return (
+                      <p key={index}>
+                        <strong>{String(risk.title)}:</strong> {String(risk.mitigation)}
+                      </p>
+                    );
+                  })}
+                </div>
+              )}
             </section>
             <aside className="event-overview-aside">
               <h2>Детали</h2>
