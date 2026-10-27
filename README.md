@@ -4,7 +4,7 @@
 
 ## Текущая версия
 
-Этап 0: Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, адаптивный лендинг, светлая/тёмная тема и заготовки Supabase. Авторизация, база данных и ИИ будут реализованы в следующих этапах.
+Этапы 0–1: адаптивный лендинг, темы оформления, регистрация и вход через Supabase (пароль, magic link, Google OAuth), восстановление пароля, онбординг профиля, защита маршрутов и RLS для таблицы профилей. Мероприятия и ИИ будут реализованы в следующих этапах.
 
 ## Требования
 
@@ -40,12 +40,17 @@ npm run build
    ```
 
 5. Заполните в `.env.local` значения `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+6. Откройте **SQL Editor** в Supabase, выполните SQL из `supabase/migrations/20261027000000_profiles.sql`.
+7. В **Authentication → URL Configuration** укажите Site URL `http://localhost:3000` и добавьте Redirect URL `http://localhost:3000/auth/callback`.
+8. Для входа через Google включите провайдер Google в **Authentication → Providers** и настройте OAuth client ID/secret у Google. Email/password и magic link доступны без настройки Google.
 
 Не добавляйте секретный `service_role` ключ в переменные `NEXT_PUBLIC_*`, клиентский код или Git.
 
+После настройки откройте `/sign-up`, зарегистрируйтесь, подтвердите email (если подтверждение включено в Supabase) и заполните онбординг. Для локального теста проверьте `/sign-in`, вход по magic link, выход и восстановление пароля.
+
 ## Настройка OpenRouter
 
-Для этапа с ИИ понадобится ключ в [OpenRouter](https://openrouter.ai/). Добавьте `OPENROUTER_API_KEY`, `OPENROUTER_CHAT_MODEL` и `OPENROUTER_FALLBACK_MODEL` в локальный `.env.local` и переменные серверного окружения при деплое. Ключ используется только серверными API-маршрутами и пока не нужен для запуска лендинга.
+Для будущего этапа с ИИ понадобится ключ в [OpenRouter](https://openrouter.ai/). Добавьте `OPENROUTER_API_KEY`, `OPENROUTER_CHAT_MODEL` и `OPENROUTER_FALLBACK_MODEL` в локальный `.env.local` и переменные серверного окружения при деплое. Ключ используется только серверными API-маршрутами и пока не нужен для запуска сайта.
 
 ## Структура
 
@@ -56,11 +61,13 @@ src/
   lib/supabase/        клиенты Supabase для браузера и сервера
   lib/utils.ts         общие утилиты UI
 supabase/
-  migrations/          SQL-миграции (будут добавлены на этапе авторизации)
+  migrations/          SQL-миграции, включая профили и RLS
   seed.sql             тестовые данные (будут добавлены вместе с моделью данных)
 .env.example           пример локальной конфигурации без секретов
 DECISIONS.md            принятые технические решения
 ```
+
+Маршруты авторизации: `/sign-in`, `/sign-up`, `/forgot-password`, `/auth/update-password`. Защищённые маршруты: `/onboarding` и `/dashboard`.
 
 ## Технические решения
 

@@ -73,8 +73,8 @@ export default function Home() {
         </nav>
 
         <div className="header-actions">
-          <a className="header-login" href="#how-it-works">Войти</a>
-          <a className="button button-dark header-cta" href="#how-it-works">
+          <a className="header-login" href="/sign-in">Войти</a>
+          <a className="button button-dark header-cta" href="/sign-up">
             Начать бесплатно <ArrowUpRight size={16} />
           </a>
           <ThemeToggle />
@@ -98,7 +98,7 @@ export default function Home() {
             бумагами.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="#how-it-works">
+            <a className="button button-primary" href="/sign-up">
               Попробовать бесплатно <ArrowRight size={17} />
             </a>
             <a className="text-link" href="#how-it-works">
@@ -195,7 +195,7 @@ export default function Home() {
             <span className="section-kicker">ПРОСТО НАЧАТЬ</span>
             <h2>От задумки<br />до <span>«всё готово».</span></h2>
             <p>Не нужно сразу знать каждый шаг. Начните с того, что уже есть.</p>
-            <a className="button button-primary" href="#top">
+            <a className="button button-primary" href="/sign-up">
               Начать с идеи <ArrowRight size={17} />
             </a>
           </div>
@@ -217,7 +217,7 @@ export default function Home() {
         <span className="section-kicker">ВАША ИДЕЯ УЖЕ ЖДЁТ</span>
         <h2>А что вы хотите<br />организовать?</h2>
         <p>Начните с пары слов — остальное продумаем вместе.</p>
-        <a className="button button-light" href="#how-it-works">
+        <a className="button button-light" href="/sign-up">
           Давайте начнём <ArrowRight size={17} />
         </a>
       </section>
