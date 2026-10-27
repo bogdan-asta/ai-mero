@@ -2,7 +2,18 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, isToolUIPart, type UIMessage } from "ai";
-import { ArrowLeft, ArrowUp, Check, LoaderCircle, Sparkles, Square } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUp,
+  CalendarDays,
+  Check,
+  CirclePlus,
+  Home,
+  LoaderCircle,
+  MessageCircle,
+  Sparkles,
+  Square,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
@@ -165,19 +176,45 @@ export function EventAssistant({
 
   return (
     <main className="assistant-page">
-      <header className="assistant-header">
-        <Link className="back-link" href={`/events/${eventId}`}> <ArrowLeft size={15} /> К мероприятию</Link>
-        <div className="assistant-event-title">
-          <span className="assistant-brand-icon"><Sparkles size={16} /></span>
-          <span><strong>EventAI</strong><small>{eventTitle}</small></span>
-        </div>
-        <button className="button button-primary assistant-plan-button" disabled={isGeneratingPlan} onClick={generatePlan} type="button">
-          {isGeneratingPlan ? <LoaderCircle className="spin" size={15} /> : <Sparkles size={15} />}
-          Составить план
-        </button>
-      </header>
+      <aside aria-label="Боковая панель" className="assistant-sidebar">
+        <Link aria-label="EventAI — на главную" className="assistant-sidebar-brand" href="/dashboard">
+          <span className="brand-mark"><Sparkles size={16} /></span>
+          <span>event<span className="brand-accent">ai</span></span>
+        </Link>
+        <span className="assistant-sidebar-label">НАВИГАЦИЯ</span>
+        <nav aria-label="Разделы сайта" className="assistant-sidebar-nav">
+          <Link aria-current="page" className="assistant-sidebar-link assistant-sidebar-link-active" href={`/events/${eventId}/assistant`}>
+            <MessageCircle size={17} /> <span>Помощник ИИ</span>
+          </Link>
+          <Link className="assistant-sidebar-link" href={`/events/${eventId}`}>
+            <CalendarDays size={17} /> <span>Обзор события</span>
+          </Link>
+          <Link className="assistant-sidebar-link" href="/events">
+            <CalendarDays size={17} /> <span>Мероприятия</span>
+          </Link>
+          <Link className="assistant-sidebar-link" href="/dashboard">
+            <Home size={17} /> <span>Главная</span>
+          </Link>
+          <Link className="assistant-sidebar-link assistant-sidebar-create" href="/events/new">
+            <CirclePlus size={17} /> <span>Создать мероприятие</span>
+          </Link>
+        </nav>
+      </aside>
 
-      <section aria-label={`Чат EventAI для мероприятия «${eventTitle}»`} className="assistant-chat">
+      <div className="assistant-workspace">
+        <header className="assistant-header">
+          <Link className="back-link" href={`/events/${eventId}`}> <ArrowLeft size={15} /> К мероприятию</Link>
+          <div className="assistant-event-title">
+            <span className="assistant-brand-icon"><Sparkles size={16} /></span>
+            <span><strong>EventAI</strong><small>{eventTitle}</small></span>
+          </div>
+          <button className="button button-primary assistant-plan-button" disabled={isGeneratingPlan} onClick={generatePlan} type="button">
+            {isGeneratingPlan ? <LoaderCircle className="spin" size={15} /> : <Sparkles size={15} />}
+            Составить план
+          </button>
+        </header>
+
+        <section aria-label={`Чат EventAI для мероприятия «${eventTitle}»`} className="assistant-chat">
         {planError && <p className="auth-message auth-message-error assistant-plan-message" role="alert">{planError}</p>}
         {planNotice && <p className="auth-message auth-message-success assistant-plan-message" role="status">{planNotice}</p>}
         {plan && (
@@ -294,7 +331,8 @@ export function EventAssistant({
           )}
           <span className="assistant-disclaimer">ИИ может ошибаться. Проверяйте данные перед использованием.</span>
         </form>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
